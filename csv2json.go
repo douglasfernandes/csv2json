@@ -9,12 +9,14 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 )
 
 func main() {
 	flagNoTrim := flag.Bool("no-trim", false, "disable trim leading space")
 	flagComma := flag.String("comma", ",", "comma")
 	flagNoHeader := flag.Bool("no-header", false, "no header, the row will be Array instead of Object")
+	flagTrimField := flag.Bool("trim-field", true, "trim field values")
 	flag.Parse()
 
 	stat, err := os.Stdin.Stat()
@@ -51,7 +53,11 @@ Options:`)
 			for y, row := range rows {
 				obj := map[string]string{}
 				for x, cell := range row {
-					obj[header[x]] = cell
+					if *flagTrimField {
+						obj[header[x]] = strings.Trim(cell, " ")
+					} else {
+						obj[header[x]] = cell
+					}
 				}
 				objs[y] = obj
 			}
